@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "33282362512",
+    "project_id": "job-finder-project-40fd5",
+    "storage_bucket": "job-finder-project-40fd5.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:33282362512:android:cc63459cdd09cc36bc1c15",
+        "android_client_info": {
+          "package_name": "com.example.job_finder_flutter"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDN_OfrnKBudxEWFMm8CERKiT1-qpZEv0o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
