@@ -1,5 +1,3 @@
-
-
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:io';
@@ -10,7 +8,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:job_finder_flutter/LoginPage/login_screen.dart';
 import 'package:job_finder_flutter/Services/global_methods.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:image_picker/image_picker.dart';
@@ -18,26 +15,30 @@ import 'package:image_picker/image_picker.dart';
 import '../Services/global_variables.dart';
 
 class SignUp extends StatefulWidget {
+  const SignUp({super.key});
 
   @override
   State<SignUp> createState() => _SignUpState();
 }
 
 class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
-
   late Animation<double> _animation;
   late AnimationController _animationController;
 
-  final TextEditingController _fullNameController = TextEditingController(text: '');
-  final TextEditingController _emailTextController = TextEditingController(text: '');
-  final TextEditingController _passTextController = TextEditingController(text: '');
-  final TextEditingController _phoneNumberController = TextEditingController(text: '');
-  final TextEditingController _locationController = TextEditingController(text: '');
+  final TextEditingController _fullNameController =
+      TextEditingController(text: '');
+  final TextEditingController _emailTextController =
+      TextEditingController(text: '');
+  final TextEditingController _passTextController =
+      TextEditingController(text: '');
+  final TextEditingController _phoneNumberController =
+      TextEditingController(text: '');
+  final TextEditingController _locationController =
+      TextEditingController(text: '');
 
-
-   final FocusNode _emailFocusNode = FocusNode();
-   final FocusNode _passFocusNode = FocusNode();
-   final FocusNode _phoneNumberFocusNode = FocusNode();
+  final FocusNode _emailFocusNode = FocusNode();
+  final FocusNode _passFocusNode = FocusNode();
+  final FocusNode _phoneNumberFocusNode = FocusNode();
   final FocusNode _positionCPFocusNode = FocusNode();
 
   final _signUpFormKey = GlobalKey<FormState>();
@@ -63,117 +64,152 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
 
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 20));
-    _animation = CurvedAnimation(parent: _animationController, curve: Curves.linear)
-      ..addListener(() {
-        setState(() {});
-      })..addStatusListener((animationStatus) {
-        if(animationStatus == AnimationStatus.completed)
-        {
-          _animationController.reset();
-          _animationController.forward();
-        }
-      });
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 20));
+    _animation =
+        CurvedAnimation(parent: _animationController, curve: Curves.linear)
+          ..addListener(() {
+            setState(() {});
+          })
+          ..addStatusListener((animationStatus) {
+            if (animationStatus == AnimationStatus.completed) {
+              _animationController.reset();
+              _animationController.forward();
+            }
+          });
     _animationController.forward();
     super.initState();
   }
 
-  void _showImageDialog()
-  {
+  void _showImageDialog() {
     showDialog(
-      context: context,
-      builder: (context)
-      {
-        return AlertDialog(
-          title: const Text('Please choose an option'),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              InkWell(
-                onTap: (){
-                  _getFromCamera();
-                },
-                child: Row(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.camera,
-                        color: Colors.purple,
+        context: context,
+        builder: (context) {
+          return AlertDialog(
+            title: const Text('Por favor, elija una opción'),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () {
+                    _getFromCamera(context);
+                  },
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.camera,
+                          color: Colors.purple,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Camera',
-                      style: TextStyle(color: Colors.purple),
-                    )
-                  ],
+                      Text(
+                        'Cámara',
+                        style: TextStyle(color: Colors.purple),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-              InkWell(
-                onTap: (){
-                  _getFromGallery();
-                },
-                child: Row(
-                  children: const [
-                    Padding(
-                      padding: EdgeInsets.all(4.0),
-                      child: Icon(
-                        Icons.image,
-                        color: Colors.purple,
+                InkWell(
+                  onTap: () {
+                    _getFromGallery(context);
+                  },
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(4.0),
+                        child: Icon(
+                          Icons.image,
+                          color: Colors.purple,
+                        ),
                       ),
-                    ),
-                    Text(
-                      'Gallery',
-                      style: TextStyle(color: Colors.purple),
-                    )
-                  ],
+                      Text(
+                        'Galería',
+                        style: TextStyle(color: Colors.purple),
+                      )
+                    ],
+                  ),
                 ),
-              ),
-            ],
-          ),
-        );
-      }
-    );
-  }
-
-  void _getFromCamera() async
-  {
-    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.camera);
-    _cropImage(pickedFile!.path);
-    Navigator.pop(context);
-  }
-
-  void _getFromGallery() async
-  {
-    XFile? pickedFile = await ImagePicker().pickImage(source: ImageSource.gallery);
-    _cropImage(pickedFile!.path);
-    Navigator.pop(context);
-  }
-
-  void _cropImage(filePath) async
-  {
-    CroppedFile? croppedImage = await ImageCropper().cropImage(
-      sourcePath: filePath, maxHeight: 1080, maxWidth: 1080
-    );
-
-    if(croppedImage != null)
-      {
-        setState(()
-        {
-          imageFile = File(croppedImage.path);
+              ],
+            ),
+          );
         });
-      }
   }
 
-  void _submitFormOnSignUp() async
-  {
+  final picker = ImagePicker();
+
+  _getFromGallery(BuildContext context) async {
+    await picker
+        .pickImage(source: ImageSource.gallery, imageQuality: 50)
+        .then((value) {
+      if (value != null) {
+        _cropImage(File(value.path), context);
+      } else {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  _getFromCamera(BuildContext context) async {
+    await picker
+        .pickImage(
+            source: ImageSource.camera,
+            imageQuality: 50,
+            preferredCameraDevice: CameraDevice.front)
+        .then((value) {
+      if (value != null) {
+        _cropImage(File(value.path), context);
+      } else {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  _cropImage(File imgFile, BuildContext context) async {
+    final croppedFile = await ImageCropper().cropImage(
+        sourcePath: imgFile.path,
+        aspectRatioPresets: Platform.isAndroid
+            ? [
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio16x9
+              ]
+            : [
+                CropAspectRatioPreset.original,
+                CropAspectRatioPreset.square,
+                CropAspectRatioPreset.ratio3x2,
+                CropAspectRatioPreset.ratio4x3,
+                CropAspectRatioPreset.ratio5x3,
+                CropAspectRatioPreset.ratio5x4,
+                CropAspectRatioPreset.ratio7x5,
+                CropAspectRatioPreset.ratio16x9
+              ],
+        uiSettings: [
+          AndroidUiSettings(
+              toolbarTitle: "Recorta tu imagen",
+              toolbarColor: Colors.deepOrange,
+              toolbarWidgetColor: Colors.white,
+              initAspectRatio: CropAspectRatioPreset.original,
+              lockAspectRatio: false),
+          IOSUiSettings(
+            title: "Recorta tu imagen",
+          )
+        ]);
+    if (croppedFile != null) {
+      imageCache.clear();
+      imageFile = File(croppedFile.path);
+      Navigator.pop(context);
+    }
+  }
+
+  void _submitFormOnSignUp() async {
     final isValid = _signUpFormKey.currentState!.validate();
-    if(isValid)
-    {
-      if(imageFile == null)
-      {
+    if (isValid) {
+      if (imageFile == null) {
         GlobalMethod.showErrorDialog(
-          error: 'Please pick an image',
+          error: 'Por favor selecciona una foto',
           ctx: context,
         );
         return;
@@ -183,19 +219,21 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
         _isLoading = true;
       });
 
-      try
-      {
+      try {
         await _auth.createUserWithEmailAndPassword(
           email: _emailTextController.text.trim().toLowerCase(),
           password: _passTextController.text.trim(),
         );
         final User? user = _auth.currentUser;
-        final _uid = user!.uid;
-        final ref = FirebaseStorage.instance.ref().child('userImages').child(_uid + '.jpg');
+        final uid = user!.uid;
+        final ref = FirebaseStorage.instance
+            .ref()
+            .child('userImages')
+            .child('$uid.jpg');
         await ref.putFile(imageFile!);
         imageUrl = await ref.getDownloadURL();
-        FirebaseFirestore.instance.collection('users').doc(_uid).set({
-          'id': _uid,
+        FirebaseFirestore.instance.collection('users').doc(uid).set({
+          'id': uid,
           'name': _fullNameController.text,
           'email': _emailTextController.text,
           'userImage': imageUrl,
@@ -204,8 +242,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
           'createdAt': Timestamp.now(),
         });
         Navigator.canPop(context) ? Navigator.pop(context) : null;
-      }catch (error)
-      {
+      } catch (error) {
         setState(() {
           _isLoading = false;
         });
@@ -229,7 +266,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
               'assets/images/wallpaper.jpg',
               fit: BoxFit.fill,
             ),
-            errorWidget: (context,url,error) => const Icon(Icons.error),
+            errorWidget: (context, url, error) => const Icon(Icons.error),
             width: double.infinity,
             height: double.infinity,
             fit: BoxFit.cover,
@@ -246,8 +283,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                     child: Column(
                       children: [
                         GestureDetector(
-                          onTap: ()
-                          {
+                          onTap: () {
                             _showImageDialog();
                           },
                           child: Padding(
@@ -256,38 +292,47 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                               width: size.width * 0.24,
                               height: size.width * 0.24,
                               decoration: BoxDecoration(
-                                border: Border.all(width: 1, color: Colors.cyanAccent,),
+                                border: Border.all(
+                                  width: 1,
+                                  color: Colors.cyanAccent,
+                                ),
                                 borderRadius: BorderRadius.circular(20),
                               ),
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(16),
                                 child: imageFile == null
-                                  ? const Icon(Icons.camera_enhance_sharp, color: Colors.cyan, size: 30,)
-                                  : Image.file(imageFile!, fit: BoxFit.fill,),
+                                    ? const Icon(
+                                        Icons.camera_enhance_sharp,
+                                        color: Colors.cyan,
+                                        size: 30,
+                                      )
+                                    : Image.file(
+                                        imageFile!,
+                                        fit: BoxFit.fill,
+                                      ),
                               ),
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_emailFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_emailFocusNode),
                           keyboardType: TextInputType.name,
                           controller: _fullNameController,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty)
-                            {
-                              return 'This Field is missing';
-                            }
-                            else
-                            {
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Este campo no puede quedar vacío';
+                            } else {
                               return null;
                             }
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            hintText: 'Full name / Company name',
+                            hintText: 'Nombre completo / Nombre de la compañía',
                             hintStyle: TextStyle(color: Colors.white),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -300,20 +345,19 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_passFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_passFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           controller: _emailTextController,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty || !value.contains('@'))
-                            {
-                              return 'Please enter a valid Email address';
-                            }
-                            else
-                            {
+                          validator: (value) {
+                            if (value!.isEmpty || !value.contains('@')) {
+                              return 'El email no es válido';
+                            } else {
                               return null;
                             }
                           },
@@ -332,29 +376,27 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_phoneNumberFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_phoneNumberFocusNode),
                           keyboardType: TextInputType.visiblePassword,
                           controller: _passTextController,
                           obscureText: !_obscureText,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty || value.length < 7)
-                            {
-                              return 'Please enter a valid password';
-                            }
-                            else
-                            {
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 7) {
+                              return 'La contraseña debe de contener una longitud mínima de 8 caracteres';
+                            } else {
                               return null;
                             }
                           },
                           style: const TextStyle(color: Colors.white),
-                          decoration:  InputDecoration(
+                          decoration: InputDecoration(
                             suffixIcon: GestureDetector(
-                              onTap: ()
-                              {
+                              onTap: () {
                                 setState(() {
                                   _obscureText = !_obscureText;
                                 });
@@ -366,7 +408,7 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                                 color: Colors.white,
                               ),
                             ),
-                            hintText: 'Password',
+                            hintText: 'Contraseña',
                             hintStyle: const TextStyle(color: Colors.white),
                             enabledBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -379,26 +421,25 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_positionCPFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_positionCPFocusNode),
                           keyboardType: TextInputType.phone,
                           controller: _phoneNumberController,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty)
-                            {
-                              return 'This Field is missing';
-                            }
-                            else
-                            {
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Este campo no puede quedar vacío';
+                            } else {
                               return null;
                             }
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            hintText: 'Phone Number',
+                            hintText: 'Número de teléfono',
                             hintStyle: TextStyle(color: Colors.white),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -411,26 +452,25 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 20,),
+                        const SizedBox(
+                          height: 20,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_positionCPFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_positionCPFocusNode),
                           keyboardType: TextInputType.text,
                           controller: _locationController,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty)
-                            {
-                              return 'This Field is missing';
-                            }
-                            else
-                            {
+                          validator: (value) {
+                            if (value!.isEmpty) {
+                              return 'Este campo no puede quedar vacío';
+                            } else {
                               return null;
                             }
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
-                            hintText: 'Company Address',
+                            hintText: 'Dirección',
                             hintStyle: TextStyle(color: Colors.white),
                             enabledBorder: UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -443,72 +483,70 @@ class _SignUpState extends State<SignUp> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 25,),
-                        _isLoading
-                        ?
-                        Center(
-                          child: Container(
-                            width: 70,
-                            height: 70,
-                            child: const CircularProgressIndicator(),
-                          ),
-                        )
-                        :
-                        MaterialButton(
-                          onPressed: (){
-                            _submitFormOnSignUp();
-                          },
-                          color: Colors.cyan,
-                          elevation: 8,
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(13),
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
-                                Text(
-                                  'SignUp',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 20,
-                                  ),)
-                              ],
-                            ),
-                          ),
+                        const SizedBox(
+                          height: 25,
                         ),
-                        const SizedBox(height: 40,),
+                        _isLoading
+                            ? const Center(
+                                child: SizedBox(
+                                  width: 70,
+                                  height: 70,
+                                  child: CircularProgressIndicator(),
+                                ),
+                              )
+                            : MaterialButton(
+                                onPressed: () {
+                                  _submitFormOnSignUp();
+                                },
+                                color: Colors.cyan,
+                                elevation: 8,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(13),
+                                ),
+                                child: const Padding(
+                                  padding:
+                                      EdgeInsets.symmetric(vertical: 14),
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'Registrarse',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                      )
+                                    ],
+                                  ),
+                                ),
+                              ),
+                        const SizedBox(
+                          height: 40,
+                        ),
                         Center(
                           child: RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: 'Already have an account?',
+                            text: TextSpan(children: [
+                              const TextSpan(
+                                  text: '¿Ya tienes una cuenta?',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 16,
-                                  )
-                                ),
-                                const TextSpan(
-                                  text: '        '
-                                ),
-                                TextSpan(
+                                  )),
+                              const TextSpan(text: '        '),
+                              TextSpan(
                                   recognizer: TapGestureRecognizer()
-                                      ..onTap = () => Navigator.canPop(context)
-                                      ? Navigator.pop(context)
-                                      : null,
+                                    ..onTap = () => Navigator.canPop(context)
+                                        ? Navigator.pop(context)
+                                        : null,
                                   text: 'Login',
-                                    style: const TextStyle(
-                                      color: Colors.cyan,
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 16,
-                                    )
-                                ),
-                              ]
-                            ),
+                                  style: const TextStyle(
+                                    color: Colors.cyan,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 16,
+                                  )),
+                            ]),
                           ),
                         ),
                       ],

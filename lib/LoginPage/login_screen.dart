@@ -11,21 +11,22 @@ import 'package:job_finder_flutter/SignupPage/signup_screen.dart';
 import '../Services/global_variables.dart';
 
 class Login extends StatefulWidget {
+  const Login({super.key});
 
   @override
   State<Login> createState() => _LoginState();
 }
 
 class _LoginState extends State<Login> with TickerProviderStateMixin {
-
   late Animation<double> _animation;
   late AnimationController _animationController;
 
-  final TextEditingController _emailTextController = TextEditingController(text: '');
-  final TextEditingController _passTextController = TextEditingController(text: '');
+  final TextEditingController _emailTextController =
+      TextEditingController(text: '');
+  final TextEditingController _passTextController =
+      TextEditingController(text: '');
 
   final FocusNode _passFocusNode = FocusNode();
-  bool _isLoading = false;
   bool _obscureText = true;
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final _loginFormKey = GlobalKey<FormState>();
@@ -38,51 +39,44 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
     _passFocusNode.dispose();
     super.dispose();
   }
-  
+
   @override
   void initState() {
-    _animationController = AnimationController(vsync: this, duration: const Duration(seconds: 20));
-    _animation = CurvedAnimation(parent: _animationController, curve: Curves.linear)
-    ..addListener(() {
-      setState(() {});
-    })..addStatusListener((animationStatus) {
-      if(animationStatus == AnimationStatus.completed)
-      {
-        _animationController.reset();
-        _animationController.forward();
-      }
-    });
+    _animationController =
+        AnimationController(vsync: this, duration: const Duration(seconds: 20));
+    _animation =
+        CurvedAnimation(parent: _animationController, curve: Curves.linear)
+          ..addListener(() {
+            setState(() {});
+          })
+          ..addStatusListener((animationStatus) {
+            if (animationStatus == AnimationStatus.completed) {
+              _animationController.reset();
+              _animationController.forward();
+            }
+          });
     _animationController.forward();
     super.initState();
   }
 
-  void _submitFormOnLogin() async
-  {
+  void _submitFormOnLogin() async {
     final isValid = _loginFormKey.currentState!.validate();
-    if(isValid)
-    {
-      setState(() {
-        _isLoading = true;
-      });
-      try
-      {
+    if (isValid) {
+      setState(() {});
+      try {
         await _auth.signInWithEmailAndPassword(
           email: _emailTextController.text.trim().toLowerCase(),
           password: _passTextController.text.trim(),
         );
         Navigator.canPop(context) ? Navigator.pop(context) : null;
-      }catch (error)
-      {
-        setState(() {
-          _isLoading = false;
-        });
-        GlobalMethod.showErrorDialog(error: error.toString(), ctx: context);
+      } catch (error) {
+        setState(() {});
+        GlobalMethod.showErrorDialog(
+            error: "Contraseña incorrecta", ctx: context);
         print('error occurred $error');
       }
     }
-    setState((){
-      _isLoading = false;
-    });
+    setState(() {});
   }
 
   @override
@@ -112,26 +106,25 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                     padding: const EdgeInsets.only(left: 80, right: 80),
                     child: Image.asset('assets/images/login.png'),
                   ),
-                  const SizedBox(height: 15,),
+                  const SizedBox(
+                    height: 15,
+                  ),
                   Form(
                     key: _loginFormKey,
                     child: Column(
                       children: [
                         TextFormField(
                           textInputAction: TextInputAction.next,
-                          onEditingComplete: () => FocusScope.of(context).requestFocus(_passFocusNode),
+                          onEditingComplete: () => FocusScope.of(context)
+                              .requestFocus(_passFocusNode),
                           keyboardType: TextInputType.emailAddress,
                           controller: _emailTextController,
-                          validator: (value)
-                          {
-                            if(value!.isEmpty || !value.contains('@'))
-                              {
-                                return 'Please enter a valid Email address';
-                              }
-                            else
-                              {
-                                return null;
-                              }
+                          validator: (value) {
+                            if (value!.isEmpty || !value.contains('@')) {
+                              return 'El email no es válido';
+                            } else {
+                              return null;
+                            }
                           },
                           style: const TextStyle(color: Colors.white),
                           decoration: const InputDecoration(
@@ -148,41 +141,38 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 5,),
+                        const SizedBox(
+                          height: 5,
+                        ),
                         TextFormField(
                           textInputAction: TextInputAction.next,
                           focusNode: _passFocusNode,
                           keyboardType: TextInputType.visiblePassword,
                           controller: _passTextController,
                           obscureText: !_obscureText, //change it dynamically
-                          validator: (value)
-                          {
-                            if(value!.isEmpty || value.length < 7)
-                            {
-                              return 'Please enter a valid password';
+                          validator: (value) {
+                            if (value!.isEmpty || value.length < 7) {
+                              return 'Por favor ingresa tu contraseña';
+                            } else {
+                              return null;
                             }
-                            else
-                              {
-                                return null;
-                              }
                           },
                           style: const TextStyle(color: Colors.white),
-                          decoration:  InputDecoration(
+                          decoration: InputDecoration(
                             suffixIcon: GestureDetector(
-                              onTap: ()
-                              {
+                              onTap: () {
                                 setState(() {
                                   _obscureText = !_obscureText;
                                 });
                               },
                               child: Icon(
                                 _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
-                              color: Colors.white,
+                                    ? Icons.visibility
+                                    : Icons.visibility_off,
+                                color: Colors.white,
                               ),
                             ),
-                            hintText: 'Password',
+                            hintText: 'Contraseña',
                             hintStyle: const TextStyle(color: Colors.white),
                             enabledBorder: const UnderlineInputBorder(
                               borderSide: BorderSide(color: Colors.white),
@@ -195,16 +185,21 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 15,),
+                        const SizedBox(
+                          height: 15,
+                        ),
                         Align(
                           alignment: Alignment.bottomRight,
                           child: TextButton(
-                            onPressed: ()
-                            {
-                              Navigator.push(context, MaterialPageRoute(builder: (context) => ForgetPassword()));
+                            onPressed: () {
+                              Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          const ForgetPassword()));
                             },
                             child: const Text(
-                              'Forget password?',
+                              '¿Olvidaste tu contraseña?',
                               style: TextStyle(
                                 color: Colors.white,
                                 fontSize: 17,
@@ -213,7 +208,9 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 10,),
+                        const SizedBox(
+                          height: 10,
+                        ),
                         MaterialButton(
                           onPressed: _submitFormOnLogin,
                           color: Colors.cyan,
@@ -221,11 +218,11 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(13),
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 14),
+                          child: const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 14),
                             child: Row(
                               mainAxisAlignment: MainAxisAlignment.center,
-                              children: const [
+                              children: [
                                 Text(
                                   'Login',
                                   style: TextStyle(
@@ -238,32 +235,35 @@ class _LoginState extends State<Login> with TickerProviderStateMixin {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 40,),
+                        const SizedBox(
+                          height: 40,
+                        ),
                         Center(
                           child: RichText(
-                            text: TextSpan(
-                              children: [
-                                const TextSpan(
-                                  text: 'Do not have an account?',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
+                            text: TextSpan(children: [
+                              const TextSpan(
+                                text: '¿No tienes una cuenta?',
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-                                const TextSpan(text: '    '),
-                                TextSpan(
-                                  recognizer: TapGestureRecognizer()
-                                      ..onTap = () => Navigator.push(context, MaterialPageRoute(builder: (context) => SignUp())),
-                                  text: 'Signup',
-                                  style: const TextStyle(
-                                    color: Colors.cyan,
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 16,
-                                  ),
+                              ),
+                              const TextSpan(text: '    '),
+                              TextSpan(
+                                recognizer: TapGestureRecognizer()
+                                  ..onTap = () => Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => SignUp())),
+                                text: 'Registrate aquí',
+                                style: const TextStyle(
+                                  color: Colors.cyan,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 16,
                                 ),
-                              ]
-                            ),
+                              ),
+                            ]),
                           ),
                         ),
                       ],

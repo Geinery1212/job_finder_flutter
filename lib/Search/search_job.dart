@@ -4,6 +4,8 @@ import 'package:job_finder_flutter/Jobs/jobs_screen.dart';
 import 'package:job_finder_flutter/Widgets/job_widget.dart';
 
 class SearchScreen extends StatefulWidget {
+  const SearchScreen({super.key});
+
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -20,7 +22,7 @@ class _SearchScreenState extends State<SearchScreen> {
       controller: _searchQueryController,
       autocorrect: true,
       decoration: const InputDecoration(
-        hintText: 'Search for jobs....',
+        hintText: 'Búsqueda por empleo....',
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white),
       ),
@@ -125,13 +127,13 @@ class _SearchScreenState extends State<SearchScreen> {
               else
               {
                 return const Center(
-                  child: Text('There is no jobs'),
+                  child: Text('Sin resultados'),
                 );
               }
             }
             return const Center(
               child: Text(
-                'Something went wrong',
+                'Algo salió mal :(',
                 style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30.0),
               ),
             );

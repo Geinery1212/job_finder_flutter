@@ -7,11 +7,12 @@ import 'package:job_finder_flutter/Search/profile_company.dart';
 import 'package:job_finder_flutter/Search/search_companies.dart';
 import 'package:job_finder_flutter/user_state.dart';
 
+// ignore: must_be_immutable
 class BottomNavigationBarForApp extends StatelessWidget {
 
   int indexNum = 0;
 
-  BottomNavigationBarForApp({required this.indexNum});
+  BottomNavigationBarForApp({super.key, required this.indexNum});
 
   void _logout(context)
   {
@@ -23,8 +24,8 @@ class BottomNavigationBarForApp extends StatelessWidget {
       {
         return AlertDialog(
           backgroundColor: Colors.black54,
-          title: Row(
-            children: const [
+          title: const Row(
+            children: [
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Icon(
@@ -36,14 +37,14 @@ class BottomNavigationBarForApp extends StatelessWidget {
               Padding(
                 padding: EdgeInsets.all(8.0),
                 child: Text(
-                  'Sign Out',
+                  'Salir',
                   style: TextStyle(color: Colors.white, fontSize: 28),
                 ),
               ),
             ],
           ),
           content: const Text(
-            'Do you want to Log Out?',
+            '¿Quieres cerrar sesión?',
             style: TextStyle(
               color: Colors.white,
               fontSize: 20,
@@ -62,7 +63,7 @@ class BottomNavigationBarForApp extends StatelessWidget {
                 Navigator.canPop(context) ? Navigator.pop(context) : null;
                 Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => UserState()));
               },
-              child: const Text('Yes', style: TextStyle(color: Colors.green, fontSize: 18),),
+              child: const Text('Si', style: TextStyle(color: Colors.green, fontSize: 18),),
             ),
           ],
         );
@@ -93,7 +94,7 @@ class BottomNavigationBarForApp extends StatelessWidget {
       {
         if(index == 0)
           {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => JobScreen()));
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const JobScreen()));
           }
         else if(index == 1)
         {
@@ -101,12 +102,12 @@ class BottomNavigationBarForApp extends StatelessWidget {
         }
         else if(index == 2)
         {
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => UploadJobNow()));
+          Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const UploadJobNow()));
         }
         else if(index == 3)
         {
-          final FirebaseAuth _auth = FirebaseAuth.instance;
-          final User? user = _auth.currentUser;
+          final FirebaseAuth auth = FirebaseAuth.instance;
+          final User? user = auth.currentUser;
           final String uid = user!.uid;
           Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => ProfileScreen(
             userID: uid,

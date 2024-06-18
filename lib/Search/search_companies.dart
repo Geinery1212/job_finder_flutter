@@ -4,23 +4,20 @@ import 'package:job_finder_flutter/Widgets/all_companies_widget.dart';
 import 'package:job_finder_flutter/Widgets/bottom_nav_bar.dart';
 
 class AllWorkersScreen extends StatefulWidget {
-
   @override
   State<AllWorkersScreen> createState() => _AllWorkersScreenState();
 }
 
 class _AllWorkersScreenState extends State<AllWorkersScreen> {
-
   final TextEditingController _searchQueryController = TextEditingController();
   String searchQuery = 'Search query';
 
-  Widget _buildSearchField()
-  {
+  Widget _buildSearchField() {
     return TextField(
       controller: _searchQueryController,
       autocorrect: true,
       decoration: const InputDecoration(
-        hintText: 'Search for companies....',
+        hintText: 'Buscar empresas/personas....',
         border: InputBorder.none,
         hintStyle: TextStyle(color: Colors.white),
       ),
@@ -29,29 +26,26 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
     );
   }
 
-  List<Widget> _buildActions()
-  {
+  List<Widget> _buildActions() {
     return <Widget>[
       IconButton(
         icon: const Icon(Icons.clear),
-        onPressed: (){
+        onPressed: () {
           _clearSearchQuery();
         },
       ),
     ];
   }
 
-  void _clearSearchQuery()
-  {
-    setState((){
+  void _clearSearchQuery() {
+    setState(() {
       _searchQueryController.clear();
       updateSearchQuery('');
     });
   }
 
-  void updateSearchQuery(String newQuery)
-  {
-    setState((){
+  void updateSearchQuery(String newQuery) {
+    setState(() {
       searchQuery = newQuery;
       print(searchQuery);
     });
@@ -69,68 +63,84 @@ class _AllWorkersScreenState extends State<AllWorkersScreen> {
         ),
       ),
       child: Scaffold(
-        bottomNavigationBar: BottomNavigationBarForApp(indexNum: 1,),
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.deepOrange.shade300, Colors.blueAccent],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                stops: const [0.2, 0.9],
+          bottomNavigationBar: BottomNavigationBarForApp(
+            indexNum: 1,
+          ),
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.deepOrange.shade300, Colors.blueAccent],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: const [0.2, 0.9],
+                ),
               ),
             ),
+            automaticallyImplyLeading: false,
+            title: _buildSearchField(),
+            actions: _buildActions(),
           ),
-          automaticallyImplyLeading: false,
-          title: _buildSearchField(),
-          actions: _buildActions(),
-        ),
-        body: StreamBuilder<QuerySnapshot>(
-          stream: FirebaseFirestore.instance
-              .collection('users')
-              .where('name', isGreaterThanOrEqualTo: searchQuery)
-              .snapshots(),
-          builder: (context, AsyncSnapshot snapshot)
-          {
-            if(snapshot.connectionState == ConnectionState.waiting)
-            {
-              return const Center(child: CircularProgressIndicator(),);
-            }
-            else if(snapshot.connectionState == ConnectionState.active)
-            {
-              if(snapshot.data!.docs.isNotEmpty)
-              {
-                return ListView.builder(
-                  itemCount: snapshot.data!.docs.length,
-                  itemBuilder: (BuildContext context , int index)
-                  {
-                    return AllWorkersWidget(
-                      userID: snapshot.data!.docs[index]['id'],
-                      userName: snapshot.data!.docs[index]['name'],
-                      userEmail: snapshot.data!.docs[index]['email'],
-                      phoneNumber: snapshot.data!.docs[index]['phoneNumber'],
-                      userImageUrl: snapshot.data!.docs[index]['userImage'],
+          body: StreamBuilder<QuerySnapshot>(
+            stream: FirebaseFirestore.instance.collection('users').snapshots(),
+            builder: (context, AsyncSnapshot<QuerySnapshot> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                }
+
+                // Filtrar los datos solo si searchQuery no está vacío
+                if (snapshot.data!.docs.isNotEmpty) {
+                  var filteredDocs = snapshot.data!.docs.where((doc) {
+                    if (searchQuery.isNotEmpty &&
+                        searchQuery != "Search query") {
+                      // Aquí puedes ajustar la lógica de filtrado según tus necesidades
+                      return doc['name']
+                          .toString()
+                          .toLowerCase()
+                          .contains(searchQuery.toLowerCase());
+                    } else {
+                      // Si searchQuery está vacío, devolver true para incluir todos los documentos
+                      return true;
+                    }
+                  }).toList();
+
+                  if (filteredDocs.isNotEmpty) {
+                    return ListView.builder(
+                      itemCount: filteredDocs.length,
+                      itemBuilder: (BuildContext context, int index) {
+                        return AllWorkersWidget(
+                          userID: filteredDocs[index]['id'],
+                          userName: filteredDocs[index]['name'],
+                          userEmail: filteredDocs[index]['email'],
+                          phoneNumber: filteredDocs[index]['phoneNumber'],
+                          userImageUrl: filteredDocs[index]['userImage'],
+                        );
+                      },
+                    );
+                  } else {
+                    return const Center(
+                      child: Text('No se encontraron usuarios'),
                     );
                   }
-                );
-              }
-              else
-              {
+                } else {
+                  return const Center(
+                    child: Text('No hay usuarios disponibles'),
+                  );
+                }
+              } else {
                 return const Center(
-                  child: Text('There is no users'),
+                  child: Text(
+                    'Algo salió mal :(',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                  ),
                 );
               }
-            }
-            return const Center(
-              child: Text(
-                'Something went wrong',
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
-              ),
-            );
-          }
-        ),
-      ),
+            },
+          )),
     );
   }
 }

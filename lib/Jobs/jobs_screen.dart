@@ -1,5 +1,4 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:job_finder_flutter/Search/search_job.dart';
 import 'package:job_finder_flutter/Widgets/bottom_nav_bar.dart';
@@ -7,48 +6,41 @@ import 'package:job_finder_flutter/Widgets/job_widget.dart';
 
 import '../Persistent/persistent.dart';
 
-
 class JobScreen extends StatefulWidget {
+  const JobScreen({super.key});
 
   @override
   State<JobScreen> createState() => _JobScreenState();
 }
 
 class _JobScreenState extends State<JobScreen> {
-
   String? jobCategoryFilter;
 
-  final FirebaseAuth _auth = FirebaseAuth.instance;
-
-  _showTaskCategoriesDialog({required Size size})
-  {
+  _showTaskCategoriesDialog({required Size size}) {
     showDialog(
         context: context,
-        builder: (ctx)
-        {
+        builder: (ctx) {
           return AlertDialog(
             backgroundColor: Colors.black54,
             title: const Text(
-              'Job Category',
+              'Categorías',
               textAlign: TextAlign.center,
               style: TextStyle(fontSize: 20, color: Colors.white),
             ),
-            content: Container(
+            content: SizedBox(
               width: size.width * 0.9,
               child: ListView.builder(
                   shrinkWrap: true,
                   itemCount: Persistent.jobCategoryList.length,
-                  itemBuilder: (ctx, index)
-                  {
+                  itemBuilder: (ctx, index) {
                     return InkWell(
-                      onTap: (){
-                        setState((){
+                      onTap: () {
+                        setState(() {
                           jobCategoryFilter = Persistent.jobCategoryList[index];
                         });
-                        Navigator.canPop(context) ? Navigator.pop(context) : null;
-                        print(
-                          'jobCategoryList[index], ${Persistent.jobCategoryList[index]}'
-                        );
+                        Navigator.canPop(context)
+                            ? Navigator.pop(context)
+                            : null;                        
                       },
                       child: Row(
                         children: [
@@ -69,40 +61,40 @@ class _JobScreenState extends State<JobScreen> {
                         ],
                       ),
                     );
-                  }
-              ),
+                  }),
             ),
             actions: [
               TextButton(
-                onPressed: ()
-                {
+                onPressed: () {
                   Navigator.canPop(context) ? Navigator.pop(context) : null;
                 },
-                child: const Text('Close', style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 16,
-                ),
+                child: const Text(
+                  'Cerrar',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 16,
+                  ),
                 ),
               ),
               TextButton(
-                onPressed: ()
-                {
-                  setState((){
+                onPressed: () {
+                  setState(() {
                     jobCategoryFilter = null;
                   });
                   Navigator.canPop(context) ? Navigator.pop(context) : null;
                 },
-                child: const Text('Cancel Filter', style: TextStyle(color: Colors.white),),
+                child: const Text(
+                  'Limpiar filtros',
+                  style: TextStyle(color: Colors.white),
+                ),
               ),
             ],
           );
-        }
-    );
+        });
   }
 
- @override
+  @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     Persistent persistentObject = Persistent();
     persistentObject.getMyData();
@@ -121,89 +113,115 @@ class _JobScreenState extends State<JobScreen> {
         ),
       ),
       child: Scaffold(
-        bottomNavigationBar: BottomNavigationBarForApp(indexNum: 0),
-        backgroundColor: Colors.transparent,
-        appBar: AppBar(
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Colors.deepOrange.shade300, Colors.blueAccent],
-                begin: Alignment.centerLeft,
-                end: Alignment.centerRight,
-                stops: const [0.2, 0.9],
-              ),
-            ),
-          ),
-          automaticallyImplyLeading: false,
-          leading: IconButton(
-            icon: const Icon(Icons.filter_list_rounded, color: Colors.black,),
-            onPressed: (){
-              _showTaskCategoriesDialog(size: size);
-            },
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.search_outlined, color: Colors.black,),
-              onPressed: ()
-              {
-                Navigator.pushReplacement(context, MaterialPageRoute(builder: (c) => SearchScreen()));
-              },
-            ),
-          ],
-        ),
-        body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
-          stream: FirebaseFirestore.instance
-              .collection('jobs')
-              .where('jobCategory', isEqualTo: jobCategoryFilter)
-              .where('recruitment', isEqualTo: true)
-              .orderBy('createdAt', descending: false)
-              .snapshots(),
-          builder: (context, AsyncSnapshot snapshot)
-          {
-            if(snapshot.connectionState == ConnectionState.waiting)
-            {
-              return const Center(child: CircularProgressIndicator(),);
-            }
-            else if(snapshot.connectionState == ConnectionState.active)
-            {
-              if(snapshot.data?.docs.isNotEmpty == true)
-              {
-                return ListView.builder(
-                  itemCount: snapshot.data?.docs.length,
-                  itemBuilder: (BuildContext context, int index)
-                  {
-                    return JobWidget(
-                      jobTitle: snapshot.data?.docs[index]['jobTitle'],
-                      jobDescription: snapshot.data?.docs[index]['jobDescription'],
-                      jobId: snapshot.data?.docs[index]['jobId'],
-                      uploadedBy: snapshot.data?.docs[index]['uploadedBy'],
-                      userImage: snapshot.data?.docs[index]['userImage'],
-                      name: snapshot.data?.docs[index]['name'],
-                      recruitment: snapshot.data?.docs[index]['recruitment'],
-                      email: snapshot.data?.docs[index]['email'],
-                      location: snapshot.data?.docs[index]['location'],
-                    );
-                  }
-                );
-              }
-              else
-              {
-                return const Center(
-                  child: Text('There is no jobs'),
-                );
-              }
-            }
-            return const Center(
-              child: Text(
-                'Something went wrong',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold, fontSize: 30
+          bottomNavigationBar: BottomNavigationBarForApp(indexNum: 0),
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [Colors.deepOrange.shade300, Colors.blueAccent],
+                  begin: Alignment.centerLeft,
+                  end: Alignment.centerRight,
+                  stops: const [0.2, 0.9],
                 ),
               ),
-            );
-          }
-        )
-      ),
+            ),
+            automaticallyImplyLeading: false,
+            leading: IconButton(
+              icon: const Icon(
+                Icons.filter_list_rounded,
+                color: Colors.black,
+              ),
+              onPressed: () {
+                _showTaskCategoriesDialog(size: size);
+              },
+            ),
+            actions: [
+              IconButton(
+                icon: const Icon(
+                  Icons.search_outlined,
+                  color: Colors.black,
+                ),
+                onPressed: () {
+                  Navigator.pushReplacement(context,
+                      MaterialPageRoute(builder: (c) => SearchScreen()));
+                },
+              ),
+            ],
+          ),
+          body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
+            stream: () {
+              var query = FirebaseFirestore.instance
+                  .collection('jobs')
+                  .where('recruitment', isEqualTo: true)
+                  .orderBy('createdAt', descending: false);
+
+              if (jobCategoryFilter != null && jobCategoryFilter!.isNotEmpty) {
+                query =
+                    query.where('jobCategory', isEqualTo: jobCategoryFilter);
+              }
+
+              return query.snapshots();
+            }(),
+            builder: (context,
+                AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(
+                  child: CircularProgressIndicator(),
+                );
+              } else if (snapshot.connectionState == ConnectionState.active) {
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Algo salió mal :(',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
+                  );
+                }
+                final docs = snapshot.data?.docs;
+                if (docs != null && docs.isNotEmpty) {
+                  return ListView.builder(
+                    itemCount: docs.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final jobData = docs[index].data();
+                      return JobWidget(
+                        jobTitle: jobData['jobTitle'],
+                        jobDescription: jobData['jobDescription'],
+                        jobId: jobData['jobId'],
+                        uploadedBy: jobData['uploadedBy'],
+                        userImage: jobData['userImage'],
+                        name: jobData['name'],
+                        recruitment: jobData['recruitment'],
+                        email: jobData['email'],
+                        location: jobData['location'],
+                      );
+                    },
+                  );
+                } else {
+                  return const Center(
+                    child: Text('Aún no hay trabajos registrados'),
+                  );
+                }
+              } else if (snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Algo salió mal :( ',
+                      style:
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                    ),
+                  );
+                }
+              }
+              return const Center(
+                child: Text(
+                  'Algo salió mal :(',
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 30),
+                ),
+              );
+            },
+          )),
     );
   }
 }

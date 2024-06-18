@@ -11,7 +11,7 @@ class ProfileScreen extends StatefulWidget {
 
   final String userID;
 
-  const ProfileScreen({required this.userID});
+  const ProfileScreen({super.key, required this.userID});
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
@@ -37,6 +37,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           .collection('users')
           .doc(widget.userID)
           .get();
+      // ignore: unnecessary_null_comparison
       if(userDoc == null)
       {
         return;
@@ -126,7 +127,7 @@ void _mailTo() async
   final Uri params = Uri(
     scheme: 'mailto',
     path: email,
-    query: 'subject=Write subject here, Please&body=Hello, please write details here',
+    query: 'subject=Escribe el asunto aquí&body=Hola, por favor escribe los detalles aquí.',
   );
   final url = params.toString();
   launchUrlString(url);
@@ -201,7 +202,7 @@ void _mailTo() async
                               const Padding(
                                 padding: EdgeInsets.all(10.0),
                                 child: Text(
-                                  'Account Information :',
+                                  'Información tu cuenta :',
                                   style: TextStyle(color: Colors.white54, fontSize: 22.0),
                                 ),
                               ),
@@ -271,21 +272,21 @@ void _mailTo() async
                                       _auth.signOut();
                                       Navigator.push(context,
                                           MaterialPageRoute(
-                                              builder: (context) => UserState(),));
+                                              builder: (context) => const UserState(),));
                                     },
                                     color: Colors.black,
                                     elevation: 8,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(13),
                                     ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.symmetric(vertical: 14),
+                                    child: const Padding(
+                                      padding: EdgeInsets.symmetric(vertical: 14),
                                       child: Row(
                                         mainAxisSize: MainAxisSize.min,
                                         mainAxisAlignment: MainAxisAlignment.center,
-                                        children: const [
+                                        children: [
                                           Text(
-                                            'Logout',
+                                            'Salir',
                                             style: TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,

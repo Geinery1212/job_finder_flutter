@@ -17,7 +17,7 @@ class JobWidget extends StatefulWidget {
   final String email;
   final String location;
 
-  const JobWidget({
+  const JobWidget({super.key, 
     required this.jobTitle,
     required this.jobDescription,
     required this.jobId,
@@ -40,7 +40,7 @@ class _JobWidgetState extends State<JobWidget> {
   _deleteDialog()
   {
     User? user = _auth.currentUser;
-    final _uid = user!.uid;
+    final uid = user!.uid;
     showDialog(
       context: context,
       builder: (ctx)
@@ -51,13 +51,13 @@ class _JobWidgetState extends State<JobWidget> {
               onPressed: () async{
                 try
                 {
-                  if(widget.uploadedBy == _uid)
+                  if(widget.uploadedBy == uid)
                   {
                     await FirebaseFirestore.instance.collection('jobs')
                         .doc(widget.jobId)
                         .delete();
                     await Fluttertoast.showToast(
-                        msg: 'Job has been deleted',
+                        msg: 'El trabajo ha sido eliminado',
                         toastLength: Toast.LENGTH_LONG,
                         backgroundColor: Colors.grey,
                         fontSize: 18.0,
@@ -67,23 +67,23 @@ class _JobWidgetState extends State<JobWidget> {
                   }
                   else
                   {
-                    GlobalMethod.showErrorDialog(error: 'You cannot perform this action', ctx: ctx);
+                    GlobalMethod.showErrorDialog(error: 'No puedes realizar esta acción.', ctx: ctx);
                   }
                 }
                 catch (error)
                 {
-                  GlobalMethod.showErrorDialog(error: 'This task cannot be deleted', ctx: ctx);
+                  GlobalMethod.showErrorDialog(error: 'Esta tarea no se puede eliminar', ctx: ctx);
                 } finally{}
               },
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Icon(
                     Icons.delete,
                     color: Colors.red,
                   ),
                   Text(
-                    'Delete',
+                    'Borrar',
                     style: TextStyle(color: Colors.red),
                   ),
                 ],
@@ -103,7 +103,7 @@ class _JobWidgetState extends State<JobWidget> {
       margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
       child: ListTile(
         onTap: (){
-          Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => JobDetailsScreen(
+          Navigator.push(context, MaterialPageRoute(builder: (context) => JobDetailsScreen(
             uploadedBy: widget.uploadedBy,
             jobID: widget.jobId,
           )));

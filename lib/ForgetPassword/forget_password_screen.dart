@@ -9,6 +9,8 @@ import 'package:job_finder_flutter/LoginPage/login_screen.dart';
 import '../Services/global_variables.dart';
 
 class ForgetPassword extends StatefulWidget {
+  const ForgetPassword({super.key});
+
 
   @override
   State<ForgetPassword> createState() => _ForgetPasswordState();
@@ -53,7 +55,7 @@ class _ForgetPasswordState extends State<ForgetPassword> with TickerProviderStat
       await _auth.sendPasswordResetEmail(
         email: _forgetPassTextController.text,
       );
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Login()));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => const Login()));
     }catch(error)
     {
       Fluttertoast.showToast(msg: error.toString());
@@ -86,7 +88,7 @@ class _ForgetPasswordState extends State<ForgetPassword> with TickerProviderStat
                   height: size.height * 0.1,
                 ),
                 const Text(
-                  'Forget Password',
+                  'Contraseña olvidada',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -96,7 +98,7 @@ class _ForgetPasswordState extends State<ForgetPassword> with TickerProviderStat
                 ),
                 const SizedBox(height: 10,),
                 const Text(
-                  'Email address',
+                  'Email',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -132,7 +134,7 @@ class _ForgetPasswordState extends State<ForgetPassword> with TickerProviderStat
                   child: const Padding(
                     padding: EdgeInsets.symmetric(vertical: 14),
                     child: Text(
-                      'Reset now',
+                      'Reestablecer ahora',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

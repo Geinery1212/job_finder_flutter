@@ -9,7 +9,7 @@ class CommentWidget extends StatefulWidget {
   final String commentBody;
   final String commenterImageUrl;
 
-  const CommentWidget({
+  const CommentWidget({super.key, 
     required this.commentId,
     required this.commenterId,
     required this.commenterName,
